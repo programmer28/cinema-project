@@ -5,14 +5,18 @@ import com.dev.cinema.lib.Injector;
 import com.dev.cinema.model.CinemaHall;
 import com.dev.cinema.model.Movie;
 import com.dev.cinema.model.MovieSession;
+import com.dev.cinema.model.ShoppingCart;
+import com.dev.cinema.model.User;
 import com.dev.cinema.service.AuthenticationService;
 import com.dev.cinema.service.CinemaHallService;
 import com.dev.cinema.service.MovieService;
 import com.dev.cinema.service.MovieSessionService;
+import com.dev.cinema.service.ShoppingCartService;
 import com.dev.cinema.service.UserService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 public class Main {
     private static Injector injector = Injector.getInstance("com.dev.cinema");
@@ -44,18 +48,22 @@ public class Main {
                 injector.getInstance(MovieSessionService.class);
         movieSessionService.add(movieSession);
 
-        movieSessionService.findAvailableSessions(movie.getId(), LocalDate.now())
-                .forEach(System.out::println);
+        List<MovieSession> availaibleSessions = movieSessionService
+                .findAvailableSessions(movie.getId(), LocalDate.now());
+        availaibleSessions.forEach(System.out::println);
 
         String email = "yaroslav28@i.ua";
         String password = "1234";
 
+        //Register the user
         AuthenticationService authenticationService = (AuthenticationService)
                 injector.getInstance(AuthenticationService.class);
-
         authenticationService.register(email, password);
+
+        //Get user who is buying the tickets
+        User user = null;
         try {
-            authenticationService.login(email, password);
+            user = authenticationService.login(email, password);
         } catch (AuthenticationException e) {
             System.out.println("Wrong email or password" + e);
         }
@@ -64,6 +72,14 @@ public class Main {
                 injector.getInstance(UserService.class);
         userService.findByEmail("yaroslav28@i.ua");
 
+        //Add a movie session to the shopping cart
+        ShoppingCartService bucketService = (ShoppingCartService)
+                injector.getInstance(ShoppingCartService.class);
+        MovieSession selectedMovieSession = availaibleSessions.get(0);
+        bucketService.addSession(selectedMovieSession, user);
+        ShoppingCart userBucket = bucketService.getByUser(user);
+
+        User user2 = authenticationService.register("i@i.ua", "pass");
     }
 
 }
