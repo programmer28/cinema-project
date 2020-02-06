@@ -9,7 +9,6 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "cinema_hall")
 public class CinemaHall {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,11 +25,11 @@ public class CinemaHall {
         this.id = id;
     }
 
-    public int getCapacity() {
+    public Integer getCapacity() {
         return capacity;
     }
 
-    public void setCapacity(int capacity) {
+    public void setCapacity(Integer capacity) {
         this.capacity = capacity;
     }
 
