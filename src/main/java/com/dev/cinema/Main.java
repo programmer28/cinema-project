@@ -8,7 +8,6 @@ import com.dev.cinema.model.Movie;
 import com.dev.cinema.model.MovieSession;
 import com.dev.cinema.model.Order;
 import com.dev.cinema.model.ShoppingCart;
-import com.dev.cinema.model.Ticket;
 import com.dev.cinema.model.User;
 import com.dev.cinema.service.AuthenticationService;
 import com.dev.cinema.service.CinemaHallService;
@@ -81,7 +80,7 @@ public class Main {
                 injector.getInstance(ShoppingCartService.class);
         MovieSession selectedMovieSession = availaibleSessions.get(0);
         bucketService.addSession(selectedMovieSession, user);
-        ShoppingCart userBucket = bucketService.getByUser(user);
+        //ShoppingCart userBucket = bucketService.getByUser(user);
 
         User user2 = authenticationService.register("i@i.ua", "pass");
 
@@ -94,9 +93,10 @@ public class Main {
         //Check for completing order
         OrderService orderService = (OrderService)
                 injector.getInstance(OrderService.class);
-        List<Ticket> tickets = shoppingCart.getTickets();
-        Order order = orderService.completeOrder(tickets, user);
+        System.out.println(shoppingCart);
+        Order order = orderService.completeOrder(shoppingCart);
         System.out.println(order);
+        System.out.println(shoppingCart);
     }
 
 }
