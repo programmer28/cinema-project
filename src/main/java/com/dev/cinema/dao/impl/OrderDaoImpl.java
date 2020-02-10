@@ -7,11 +7,11 @@ import com.dev.cinema.model.Order;
 import com.dev.cinema.model.User;
 import com.dev.cinema.util.HibernateUtil;
 import java.util.List;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Projections;
+import org.hibernate.transform.Transformers;
 
 @Dao
 public class OrderDaoImpl implements OrderDao {
@@ -20,9 +20,9 @@ public class OrderDaoImpl implements OrderDao {
         Transaction transaction = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            Long itemId = (Long)session.save(order);
+            Long orderId = (Long)session.save(order);
             transaction.commit();
-            order.setId(itemId);
+            order.setId(orderId);
             return order;
         } catch (Exception e) {
             if (transaction != null) {
@@ -35,11 +35,11 @@ public class OrderDaoImpl implements OrderDao {
     @Override
     public List<Order> getOrderHistory(User user) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            CriteriaBuilder cb = session.getCriteriaBuilder();
-            CriteriaQuery<Order> cq = cb.createQuery(Order.class);
-            Root<Order> root = cq.from(Order.class);
-            cq.select(root).where(cb.equal(root.get("user"), user));
-            return session.createQuery(cq).getResultList();
+            Criteria cr = session.createCriteria(Order.class)
+                    .setProjection(Projections.projectionList()
+                    .add(Projections.property("orderDate"), "orderDate"));
+            cr.setResultTransformer(Transformers.aliasToBean(Order.class));
+            return cr.list();
         } catch (Exception e) {
             throw new DataProcessingException("Can't get order history by user with email: "
                     + user.getEmail(), e);

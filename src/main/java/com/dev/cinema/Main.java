@@ -97,6 +97,9 @@ public class Main {
         Order order = orderService.completeOrder(shoppingCart);
         System.out.println(order);
         System.out.println(shoppingCart);
+
+        //Check for getting list of all orders for single user
+        orderService.getOrderHistory(user).forEach(System.out::println);
     }
 
 }
