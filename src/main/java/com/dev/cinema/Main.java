@@ -1,16 +1,19 @@
 package com.dev.cinema;
 
+import com.dev.cinema.dao.ShoppingCartDao;
 import com.dev.cinema.exception.AuthenticationException;
 import com.dev.cinema.lib.Injector;
 import com.dev.cinema.model.CinemaHall;
 import com.dev.cinema.model.Movie;
 import com.dev.cinema.model.MovieSession;
+import com.dev.cinema.model.Order;
 import com.dev.cinema.model.ShoppingCart;
 import com.dev.cinema.model.User;
 import com.dev.cinema.service.AuthenticationService;
 import com.dev.cinema.service.CinemaHallService;
 import com.dev.cinema.service.MovieService;
 import com.dev.cinema.service.MovieSessionService;
+import com.dev.cinema.service.OrderService;
 import com.dev.cinema.service.ShoppingCartService;
 import com.dev.cinema.service.UserService;
 import java.time.LocalDate;
@@ -77,9 +80,26 @@ public class Main {
                 injector.getInstance(ShoppingCartService.class);
         MovieSession selectedMovieSession = availaibleSessions.get(0);
         bucketService.addSession(selectedMovieSession, user);
-        ShoppingCart userBucket = bucketService.getByUser(user);
+        //ShoppingCart userBucket = bucketService.getByUser(user);
 
         User user2 = authenticationService.register("i@i.ua", "pass");
+
+        //Check for existing tickets in shopping cart
+        ShoppingCartDao shoppingCartDao = (ShoppingCartDao)
+                injector.getInstance(ShoppingCartDao.class);
+        ShoppingCart shoppingCart = shoppingCartDao.getByUser(user);
+        shoppingCart.getTickets().forEach(System.out::println);
+
+        //Check for completing order
+        OrderService orderService = (OrderService)
+                injector.getInstance(OrderService.class);
+        System.out.println(shoppingCart);
+        Order order = orderService.completeOrder(shoppingCart);
+        System.out.println(order);
+        System.out.println(shoppingCart);
+
+        //Check for getting list of all orders for single user
+        orderService.getOrderHistory(user).forEach(System.out::println);
     }
 
 }
