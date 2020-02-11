@@ -100,6 +100,8 @@ public class Main {
 
         //Check for getting list of all orders for single user
         orderService.getOrderHistory(user).forEach(System.out::println);
+        System.out.println(shoppingCart);
+        orderService.getOrderHistory(user).forEach(System.out::println);
     }
 
 }
