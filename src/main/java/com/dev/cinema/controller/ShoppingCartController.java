@@ -36,12 +36,17 @@ public class ShoppingCartController {
     @PostMapping("/addmoviesession")
     public void addMovieSession(@RequestBody MovieSessionResponseDto movieSessionResponseDto,
                                 @RequestBody UserResponseDto userResponseDto) {
+        MovieSession movieSession = getMovieSession(movieSessionResponseDto);
+        User user = userService.findByEmail(userResponseDto.getEmail());
+        shoppingCartService.addSession(movieSession, user);
+    }
+
+    private MovieSession getMovieSession(MovieSessionResponseDto movieSessionResponseDto) {
         MovieSession movieSession = new MovieSession();
         movieSession.setMovie(movieSessionResponseDto.getMovie());
         movieSession.setCinemaHall(movieSessionResponseDto.getCinemaHall());
         movieSession.setShowTime(movieSessionResponseDto.getShowTime());
-        User user = userService.findByEmail(userResponseDto.getEmail());
-        shoppingCartService.addSession(movieSession, user);
+        return movieSession;
     }
 
     private ShoppingCartResponseDto getShoppingCartResponseDto(ShoppingCart shoppingCart) {
